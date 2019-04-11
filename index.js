@@ -58,7 +58,7 @@ const isSnake = (snakes, testPosition) => snakes
   .reduce((a, b) => a.concat(b), [])
   .find(snake => snake.x === testPosition.x && snake.y === testPosition.y);
 
-const isEnemySnakeHead = (snakes, you, testPosition) => {
+const getEnemySnake = (snakes, you, testPosition) => {
   if (snakes.length === 1) {
     return false;
   }
@@ -164,17 +164,23 @@ const calculateDirectionScore = (body) => {
       });
     }
 
-    if (isEnemySnakeHead(body.board.snakes, body.you, testPosition)) {
+    const enemySnake = getEnemySnake(body.board.snakes, body.you, testPosition);
+    if (enemySnake && enemySnake.body.length >= body.you.body.length) {
       return Object.assign({}, result, {
         score: 1,
       });
+    }
+
+    let enemyScore = 0;
+    if (enemySnake && enemySnake.body.length < body.you.body.length) {
+      enemyScore = 500;
     }
 
     const fs = foodScore(body.board, testPosition);
     const numVisited = reachableCells(body.board, testPosition);
 
     return Object.assign({}, result, {
-      score: fs[0],
+      score: fs[0] + enemyScore,
       numVisited,
     });
   });
