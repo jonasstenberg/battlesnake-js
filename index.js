@@ -203,7 +203,6 @@ app.post('/start', (request, response) => {
   // Response data
   const data = {
     color: '#000000',
-    move: validDirections[Math.floor(Math.random() * Math.floor(4))],
   };
 
   return response.json(data);
@@ -212,21 +211,15 @@ app.post('/start', (request, response) => {
 // Handle POST request to '/move'
 app.post('/move', (request, response) => {
   try {
-    // const directions = calculateDirectionScore(request.body);
-    // directions.sort((o1, o2) => o2.score - o1.score);
-
-    // console.log(directions);
+    const directions = calculateDirectionScore(request.body);
+    directions.sort((o1, o2) => o2.score - o1.score);
 
     // Response data
-    // const data = {
-    //   move: directions[0].name,
-    // };
     const data = {
-      move: 'left',
+      move: directions[0].name,
     };
 
-    console.log('request', request);
-    console.log('response', response);
+    console.log(data);
 
     return response.json(data);
   } catch (err) {
