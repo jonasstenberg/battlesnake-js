@@ -225,6 +225,9 @@ app.post('/move', (request, response) => {
       move: 'left',
     };
 
+    console.log('request', request);
+    console.log('response', response);
+
     return response.json(data);
   } catch (err) {
     console.log(err);
