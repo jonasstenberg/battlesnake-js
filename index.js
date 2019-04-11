@@ -215,12 +215,12 @@ app.post('/move', (request, response) => {
     const directions = calculateDirectionScore(request.body);
     directions.sort((o1, o2) => o2.score - o1.score);
 
+    console.log(directions);
+
     // Response data
     const data = {
       move: directions[0].name,
     };
-
-    console.log(request.body.you);
 
     return response.json(data);
   } catch (err) {
