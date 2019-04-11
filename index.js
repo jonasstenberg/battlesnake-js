@@ -66,8 +66,7 @@ const getEnemySnake = (snakes, you, testPosition) => {
   const enemySnakes = snakes.filter(snake => snake.id !== you.id);
 
   return enemySnakes
-    .map(snake => snake.body[0])
-    .find(snakeHead => distance(snakeHead.x, snakeHead.y, testPosition.x, testPosition.y) === 1);
+    .find(snake => distance(snake.body[0].x, snake.body[0].y, testPosition.x, testPosition.y) === 1); // eslint-disable-line
 };
 
 const reachableCells = (board, testPosition) => {
@@ -164,10 +163,13 @@ const calculateDirectionScore = (body) => {
       });
     }
 
+    const numVisited = reachableCells(body.board, testPosition);
+
     const enemySnake = getEnemySnake(body.board.snakes, body.you, testPosition);
     if (enemySnake && enemySnake.body.length >= body.you.body.length) {
       return Object.assign({}, result, {
         score: 1,
+        numVisited,
       });
     }
 
@@ -177,7 +179,6 @@ const calculateDirectionScore = (body) => {
     }
 
     const fs = foodScore(body.board, testPosition);
-    const numVisited = reachableCells(body.board, testPosition);
 
     return Object.assign({}, result, {
       score: fs[0] + enemyScore,
@@ -193,6 +194,12 @@ const calculateDirectionScore = (body) => {
     .sort((o1, o2) => o2.numVisited - o1.numVisited)
     .map((score) => {
       if (scores[0].numVisited > score.numVisited) {
+        if (score.numVisited > body.you.body.length * 2) {
+          return Object.assign({}, score, {
+            score: 10,
+          });
+        }
+
         return Object.assign({}, score, {
           score: 0,
         });
@@ -224,8 +231,6 @@ app.post('/move', (request, response) => {
     const data = {
       move: directions[0].name,
     };
-
-    console.log(data);
 
     return response.json(data);
   } catch (err) {
