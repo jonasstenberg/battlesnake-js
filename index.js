@@ -212,14 +212,17 @@ app.post('/start', (request, response) => {
 // Handle POST request to '/move'
 app.post('/move', (request, response) => {
   try {
-    const directions = calculateDirectionScore(request.body);
-    directions.sort((o1, o2) => o2.score - o1.score);
+    // const directions = calculateDirectionScore(request.body);
+    // directions.sort((o1, o2) => o2.score - o1.score);
 
-    console.log(directions);
+    // console.log(directions);
 
     // Response data
+    // const data = {
+    //   move: directions[0].name,
+    // };
     const data = {
-      move: directions[0].name,
+      move: 'left',
     };
 
     return response.json(data);
