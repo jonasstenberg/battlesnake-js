@@ -18,6 +18,9 @@
     "morgan": "^1.9.1"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
     "nodemon": "^1.18.9"
   },
   "main": "index.js",
@@ -26,5 +29,28 @@
   },
   "scripts": {
     "start": "cross-env PORT=5000 nodemon index.js"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "airbnb-base"
+    ],
+    "rules": {
+      "no-unused-vars": [
+        "error",
+        {
+          "varsIgnorePattern": "h"
+        }
+      ],
+      "valid-jsdoc": [
+        "warn",
+        {
+          "requireParamDescription": false,
+          "requireReturnDescription": false
+        }
+      ]
+    }
   }
 }
