@@ -10,8 +10,6 @@ const {
   poweredByHandler,
 } = require('./handlers.js');
 
-// For deployment to Heroku, the port needs to be set using ENV, so
-// we check for the port number in process.env
 app.set('port', (process.env.PORT || 9001));
 
 app.enable('verbose errors');
@@ -20,9 +18,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(poweredByHandler);
 
-// --- SNAKE LOGIC GOES BELOW THIS LINE ---
+let justAte = false;
 
-const validDirections = ['up', 'down', 'left', 'right'];
 const coordinates = [
   {
     x: 0,
@@ -53,10 +50,17 @@ const isWall = (board, testPosition) => (testPosition.x < 0
   || testPosition.x >= board.width
   || testPosition.y >= board.height);
 
-const isSnake = (snakes, testPosition) => snakes
-  .map(snake => snake.body)
-  .reduce((a, b) => a.concat(b), [])
-  .find(snake => snake.x === testPosition.x && snake.y === testPosition.y);
+const isSnake = (snakes, you, testPosition) => {
+  const ourTail = you.body[you.body.length - 1];
+  if (!justAte && testPosition.x === ourTail.x && testPosition.y === ourTail.y) {
+    return false;
+  }
+
+  return snakes
+    .map(snake => snake.body)
+    .reduce((a, b) => a.concat(b), [])
+    .find(snake => snake.x === testPosition.x && snake.y === testPosition.y);
+};
 
 const getEnemySnake = (snakes, you, testPosition) => {
   if (snakes.length === 1) {
@@ -151,7 +155,7 @@ const reachableCells = (board, testPosition) => {
 const getFoodScore = (board, testPosition) => board.food
   .map(food => distance(food.x, food.y, testPosition.x, testPosition.y))
   .map(d => distance(0, 0, board.width, board.height) - d)
-  .sort((o1, o2) => o2 - o1);
+  .sort((o1, o2) => o2 - o1)[0];
 
 const calculateDirectionScore = (body) => {
   const scores = coordinates.map((direction) => {
@@ -172,7 +176,7 @@ const calculateDirectionScore = (body) => {
       });
     }
 
-    if (isSnake(body.board.snakes, testPosition)) {
+    if (isSnake(body.board.snakes, body.you, testPosition)) {
       return Object.assign({}, result, {
         score: 0,
       });
@@ -183,7 +187,7 @@ const calculateDirectionScore = (body) => {
     const enemySnake = getEnemySnake(body.board.snakes, body.you, testPosition);
     if (enemySnake && enemySnake.body.length >= body.you.body.length) {
       return Object.assign({}, result, {
-        score: 1,
+        score: 0,
         numVisited,
       });
     }
@@ -196,7 +200,7 @@ const calculateDirectionScore = (body) => {
     const foodScore = getFoodScore(body.board, testPosition);
 
     return Object.assign({}, result, {
-      score: foodScore[0] + enemyScore,
+      score: foodScore + enemyScore,
       numVisited,
     });
   });
@@ -246,6 +250,22 @@ app.post('/move', (request, response) => {
     const data = {
       move: directions[0].name,
     };
+
+    const ourHead = request.body.you.body[0];
+    const delta = coordinates.find(coordinate => coordinate.name === directions[0].name);
+    const newPosition = {
+      x: ourHead.x + delta.x,
+      y: ourHead.y + delta.y,
+    };
+
+    justAte = false;
+    for (let i = 0; i < request.body.board.food.length; i += 1) {
+      const food = request.body.board.food[i];
+      if (newPosition.x === food.x && newPosition.y === food.y) {
+        justAte = true;
+        break;
+      }
+    }
 
     return response.json(data);
   } catch (err) {
