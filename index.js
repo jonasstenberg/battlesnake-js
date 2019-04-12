@@ -65,8 +65,15 @@ const getEnemySnake = (snakes, you, testPosition) => {
 
   const enemySnakes = snakes.filter(snake => snake.id !== you.id);
 
-  return enemySnakes
-    .find(snake => distance(snake.body[0].x, snake.body[0].y, testPosition.x, testPosition.y) === 1); // eslint-disable-line
+  const closeEnemySnake = enemySnakes
+    .filter(snake => distance(snake.body[0].x, snake.body[0].y, testPosition.x, testPosition.y) === 1) // eslint-disable-line
+    .sort((snake1, snake2) => snake1.body.length - snake2.body.length);
+
+  if (closeEnemySnake && closeEnemySnake.length > 0) {
+    return closeEnemySnake[0];
+  }
+
+  return false;
 };
 
 const reachableCells = (board, testPosition) => {
