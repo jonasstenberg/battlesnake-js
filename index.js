@@ -168,6 +168,7 @@ const calculateDirectionScore = (body) => {
     const result = {
       name: direction.name,
       numVisited: 0,
+      score: 2,
     };
 
     if (isWall(body.board, testPosition)) {
@@ -187,7 +188,7 @@ const calculateDirectionScore = (body) => {
     const enemySnake = getEnemySnake(body.board.snakes, body.you, testPosition);
     if (enemySnake && enemySnake.body.length >= body.you.body.length) {
       return Object.assign({}, result, {
-        score: 0,
+        score: 1,
         numVisited,
       });
     }
