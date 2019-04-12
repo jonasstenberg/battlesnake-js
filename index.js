@@ -78,15 +78,19 @@ const reachableCells = (board, testPosition) => {
       grid[x][y] = {
         visited: false,
         obstacle: false,
+        tail: false,
       };
     }
   }
 
   board.snakes
-    .map(snake => snake.body)
-    .reduce((a, b) => a.concat(b), [])
     .forEach((snake) => {
-      grid[snake.x][snake.y].obstacle = true;
+      snake.body.forEach((snakePart, index) => {
+        if (snake.body.length > 2 && index > snake.body.length - 2) {
+          grid[snakePart.x][snakePart.y].tail = true;
+        }
+        grid[snakePart.x][snakePart.y].obstacle = true;
+      });
     });
 
   const recursive = (cell) => {
@@ -95,6 +99,10 @@ const reachableCells = (board, testPosition) => {
     }
 
     const gridCell = grid[cell.x][cell.y];
+    if (gridCell.tail) {
+      return 100;
+    }
+
     if (gridCell.visited || gridCell.obstacle) {
       return 0;
     }
@@ -133,7 +141,7 @@ const reachableCells = (board, testPosition) => {
   return numVisited;
 };
 
-const foodScore = (board, testPosition) => board.food
+const getFoodScore = (board, testPosition) => board.food
   .map(food => distance(food.x, food.y, testPosition.x, testPosition.y))
   .map(d => distance(0, 0, board.width, board.height) - d)
   .sort((o1, o2) => o2 - o1);
@@ -178,10 +186,10 @@ const calculateDirectionScore = (body) => {
       enemyScore = 500;
     }
 
-    const fs = foodScore(body.board, testPosition);
+    const foodScore = getFoodScore(body.board, testPosition);
 
     return Object.assign({}, result, {
-      score: fs[0] + enemyScore,
+      score: foodScore[0] + enemyScore,
       numVisited,
     });
   });
@@ -239,7 +247,6 @@ app.post('/move', (request, response) => {
 });
 
 app.post('/end', (request, response) => {
-  console.log('end', request.body.you);
   // NOTE: Any cleanup when a game is complete.
   return response.json({});
 });
