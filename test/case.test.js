@@ -1,90 +1,62 @@
-const chai = require("chai");
-const game = require("../game");
+import chai from 'chai';
+import { start, end, move } from '../game';
 
 const { expect } = chai;
 
-const buildRequest = (health, charMap) => {
-  const height = charMap.length;
-  let width = height;
-  const snakesMap = {
-    A: {
-      body: [],
-      name: "A",
-      id: "A"
-    },
-    B: {
-      body: [],
-      name: "B",
-      id: "B"
-    }
+const getLinkedPart = (coord, diff, width, height) => {
+  const targetCoord = {
+    x: coord.x + diff.x,
+    y: coord.y + diff.y
   };
-  const me = [];
-  const food = [];
-  charMap.forEach((row, y) => {
-    width = row.length / 2;
-    for (let x = 0; x < width; x += 1) {
-      const mainChar = row.charAt(x * 2);
-      const subChar = row.charAt(x * 2 + 1);
-      if (mainChar === "M") {
-        me.splice(subChar, 0, { x, y });
-      } else if (mainChar === "A") {
-        snakesMap[mainChar].body.splice(subChar, 0, { x, y });
-      } else if (mainChar === "o") {
-        food.push({ x, y });
+
+  if (targetCoord.x < 0 || targetCoord.y < 0 || targetCoord.x >= width || targetCoord.y >= height) {
+    return null;
+  }
+
+  return targetCoord;
+};
+
+const findHeadForPlayer = (player, board) => {
+  for (let y = 0; y < board.length; y += 1) {
+    for (let x = 0; x < board[0].length; x += 1) {
+      const cell = board[y][x];
+      if (cell.player === player && cell.isHead) {
+        return cell;
       }
     }
-  });
-
-  console.log();
-
-  const you = {
-    id: "you",
-    name: "you",
-    health,
-    body: me
-  };
-
-  return {
-    board: {
-      width,
-      height,
-      snakes: [...Object.values(snakesMap).filter(s => s.body.length > 0), you],
-      food
-    },
-    you
-  };
+  }
+  return null;
 };
 
 const buildRequest2 = (health, charMap) => {
   const height = charMap.length;
   let width = height;
   const snakes = [];
-  const me = [];
   const food = [];
 
-  objectMap = [];
+  const objectMap = [];
 
   charMap.forEach((row, y) => {
     width = row.length;
-    rowMap = [];
+    const rowMap = [];
     for (let x = 0; x < width; x += 1) {
       const mainChar = row.charAt(x);
 
-      if (mainChar === "A") {
+      if (mainChar === 'A') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: 0, y: -1 } });
-      } else if (mainChar === "v") {
+      } else if (mainChar === 'v') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: 0, y: 1 } });
-      } else if (mainChar === "<") {
+      } else if (mainChar === '<') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: -1, y: 0 } });
-      } else if (mainChar === ">") {
+      } else if (mainChar === '>') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: 1, y: 0 } });
-      } else if (mainChar === "⇈") {
+      } else if (mainChar === '⇈') {
         rowMap.push({ coord: { x, y }, player: 2, nextDiff: { x: 0, y: -1 } });
-      } else if (mainChar === "⇊") {
+      } else if (mainChar === '⇊') {
         rowMap.push({ coord: { x, y }, player: 2, nextDiff: { x: 0, y: 1 } });
-      } else if (mainChar === "⇇") {
+      } else if (mainChar === '⇇') {
         rowMap.push({ coord: { x, y }, player: 2, nextDiff: { x: -1, y: 0 } });
-      } else if (mainChar === "⇉") {
+      } else if (mainChar === '⇉') {
         rowMap.push({ coord: { x, y }, player: 2, nextDiff: { x: 1, y: 0 } });
       } else {
         rowMap.push({ coord: { x, y } });
@@ -100,12 +72,7 @@ const buildRequest2 = (health, charMap) => {
         return cell;
       }
 
-      const linkedCoord = getLinkedPart(
-        { x: colIndex, y: rowIndex },
-        cell.nextDiff,
-        width,
-        height
-      );
+      const linkedCoord = getLinkedPart({ x: colIndex, y: rowIndex }, cell.nextDiff, width, height);
 
       if (linkedCoord == null) {
         return {
@@ -115,10 +82,10 @@ const buildRequest2 = (health, charMap) => {
       }
 
       const targetCell = objectMap[linkedCoord.y][linkedCoord.x];
-      console.log("cell", cell);
-      console.log("linkedCoord", linkedCoord);
-      console.log("targetCell", targetCell);
-      if (cell.player != targetCell.player) {
+      console.log('cell', cell);
+      console.log('linkedCoord', linkedCoord);
+      console.log('targetCell', targetCell);
+      if (cell.player !== targetCell.player) {
         return {
           ...cell,
           isHead: true
@@ -174,36 +141,36 @@ const buildRequest2 = (health, charMap) => {
     }
   }
 
-  console.log(" ___________ ");
+  console.log(' ___________ ');
   nextLinkedMap.forEach(row => {
-    let str = "|";
+    let str = '|';
     row.forEach(cell => {
       if (cell.player !== null && cell.player !== undefined) {
         if (cell.player === 1 && cell.nextDiff.y === -1) {
-          str += "A";
+          str += 'A';
         } else if (cell.player === 1 && cell.nextDiff.y === 1) {
-          str += "v";
+          str += 'v';
         } else if (cell.player === 1 && cell.nextDiff.x === -1) {
-          str += "<";
+          str += '<';
         } else if (cell.player === 1 && cell.nextDiff.x === 1) {
-          str += ">";
+          str += '>';
         } else if (cell.player === 2 && cell.nextDiff.y === -1) {
-          str += "⇈";
+          str += '⇈';
         } else if (cell.player === 2 && cell.nextDiff.y === 1) {
-          str += "⇊";
+          str += '⇊';
         } else if (cell.player === 2 && cell.nextDiff.x === -1) {
-          str += "⇇";
+          str += '⇇';
         } else if (cell.player === 2 && cell.nextDiff.x === 1) {
-          str += "⇉";
+          str += '⇉';
         }
       } else {
-        str += " ";
+        str += ' ';
       }
     });
-    str += "|";
+    str += '|';
     console.log(str);
   });
-  console.log(" ----------- ");
+  console.log(' ----------- ');
 
   const realSnakes = snakes.map(snake => ({
     ...snake,
@@ -232,42 +199,13 @@ const buildRequest2 = (health, charMap) => {
   return body;
 };
 
-const getLinkedPart = (coord, diff, width, height) => {
-  const targetCoord = {
-    x: coord.x + diff.x,
-    y: coord.y + diff.y
-  };
-
-  if (
-    targetCoord.x < 0 ||
-    targetCoord.y < 0 ||
-    targetCoord.x >= width ||
-    targetCoord.y >= height
-  ) {
-    return null;
-  }
-
-  return targetCoord;
-};
-
-const findHeadForPlayer = (player, board) => {
-  for (let y = 0; y < board.length; y += 1) {
-    for (let x = 0; x < board[0].length; x += 1) {
-      const cell = board[y][x];
-      if (cell.player === player && cell.isHead) {
-        return cell;
-      }
-    }
-  }
-};
-
-describe("Snake", () => {
+describe('Snake', () => {
   beforeEach(() => {
-    game.start();
+    start();
   });
 
   afterEach(() => {
-    game.end();
+    end();
   });
 
   /* it("should avoid walls", done => {
@@ -342,7 +280,7 @@ describe("Snake", () => {
       .catch(done);
   }); */
 
-  it("should go for more area. Case 0", done => {
+  it('should go for more area. Case 0', done => {
     /* const body = buildRequest(100, [
       ".1A6A7A8.1.0.1.1.1.1",
       "A4A5.1A9.1.1.1.1.1.1",
@@ -358,23 +296,22 @@ describe("Snake", () => {
     ]); */
 
     const body = buildRequest2(100, [
-      " ⇊⇇⇇       ",
-      "⇊⇇ ⇈       ",
-      "⇊.Av<<<<<<<",
-      "⇊ A<       ",
-      "⇊          ",
-      "⇉⇉         ",
-      "           ",
-      "           ",
-      "           ",
-      "           ",
-      "           "
+      ' ⇊⇇⇇       ',
+      '⇊⇇ ⇈       ',
+      '⇊.Av<<<<<<<',
+      '⇊ A<       ',
+      '⇊          ',
+      '⇉⇉         ',
+      '           ',
+      '           ',
+      '           ',
+      '           ',
+      '           '
     ]);
 
-    game
-      .move(body)
+    move(body)
       .then(result => {
-        expect(result.move).to.equal("left");
+        expect(result.move).to.equal('left');
         done();
       })
       .catch(done);

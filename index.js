@@ -22,20 +22,20 @@ app.use(poweredByHandler);
 
 // Handle POST request to '/start'
 app.post('/start', (request, response) => {
-  game.start().then((data) => {
+  game.start().then(data => {
     response.json(data);
   });
 });
 
 // Handle POST request to '/move'
 app.post('/move', (request, response) => {
-  game.move(request.body).then((data) => {
+  game.move(request.body).then(data => {
     response.json(data);
   });
 });
 
 app.post('/end', (request, response) => {
-  game.start().then((data) => {
+  game.start().then(data => {
     response.json(data);
   });
 });

@@ -32,10 +32,10 @@ const isSnake = (snakes, you, testPosition) => {
   if (you != null) {
     const ourTail = you.body[you.body.length - 1];
     if (
-      you.body.length > 4
-      && !justAte
-      && testPosition.x === ourTail.x
-      && testPosition.y === ourTail.y
+      you.body.length > 4 &&
+      !justAte &&
+      testPosition.x === ourTail.x &&
+      testPosition.y === ourTail.y
     ) {
       console.log('Follow tail');
       return false;
@@ -57,12 +57,7 @@ const getEnemySnake = (snakes, you, testPosition) => {
 
   const closeEnemySnake = enemySnakes
     .filter(
-      snake => distance(
-          snake.body[0].x,
-          snake.body[0].y,
-          testPosition.x,
-          testPosition.y,
-        ) === 1,
+      snake => distance(snake.body[0].x, snake.body[0].y, testPosition.x, testPosition.y) === 1,
     ) // eslint-disable-line
     .sort((snake1, snake2) => snake1.body.length - snake2.body.length);
 
@@ -73,7 +68,8 @@ const getEnemySnake = (snakes, you, testPosition) => {
   return false;
 };
 
-const getFoodScore = (board, testPosition, health) => board.food
+const getFoodScore = (board, testPosition, health) =>
+  board.food
     .map(food => distance(food.x, food.y, testPosition.x, testPosition.y))
     .map(d => distance(0, 0, board.width, board.height) - d)
     .map(d => (d * (130 - health)) / 100)
@@ -106,9 +102,9 @@ const willDirectionTrapOpponent = (board, testPosition, xDiff, yDiff, you) => {
 
   const anyWasTrapped = board.snakes
     .filter(snake => snake.id !== you.id)
-    .map((snake) => {
+    .map(snake => {
       const numVisited = reachableCells(newBoard, snake.body[0], snake.body[0]);
-      console.log('Num visisted for ' + snake.name + ': ' + numVisited);
+      console.log(`Num visisted for ${snake.name}: ${numVisited}`);
       return numVisited < snake.body.length;
     })
     .reduce((acc, curr) => acc || curr, false);
@@ -116,8 +112,8 @@ const willDirectionTrapOpponent = (board, testPosition, xDiff, yDiff, you) => {
   return anyWasTrapped;
 };
 
-const calculateDirectionScore = (body) => {
-  const scores = coordinates.map((direction) => {
+const calculateDirectionScore = body => {
+  const scores = coordinates.map(direction => {
     const currentPosition = body.you.body[0];
     const testPosition = {
       x: direction.x + currentPosition.x,
@@ -187,7 +183,7 @@ const calculateDirectionScore = (body) => {
 
   return scores
     .sort((o1, o2) => o2.numVisited - o1.numVisited)
-    .map((score) => {
+    .map(score => {
       if (scores[0].numVisited > score.numVisited) {
         if (score.numVisited > body.you.body.length * 2) {
           return Object.assign({}, score, {
@@ -219,14 +215,14 @@ const start = () => {
   return Promise.resolve(data);
 };
 
-const move = (body) => {
+const move = body => {
   try {
     const directions = calculateDirectionScore(body);
     directions.sort((o1, o2) => o2.score - o1.score);
 
     console.log(body);
     console.log(`${body.you.name} turn: ${body.turn}`);
-    directions.forEach((d) => {
+    directions.forEach(d => {
       console.log(`${d.name} based on \t${d.score.toFixed(1)}\t${d.why}`);
     });
 
@@ -236,9 +232,7 @@ const move = (body) => {
     };
 
     const ourHead = body.you.body[0];
-    const delta = coordinates.find(
-      coordinate => coordinate.name === directions[0].name,
-    );
+    const delta = coordinates.find(coordinate => coordinate.name === directions[0].name);
     const newPosition = {
       x: ourHead.x + delta.x,
       y: ourHead.y + delta.y,
