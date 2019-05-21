@@ -14,7 +14,7 @@ const reachableCells = (board, testPosition, head) => {
     }
   }
 
-  board.snakes.forEach((snake) => {
+  board.snakes.forEach(snake => {
     snake.body.forEach((snakePart, index) => {
       if (snake.body.length > 2 && index + 1 >= snake.body.length) {
         grid[snakePart.x][snakePart.y].tail = true;
@@ -31,7 +31,7 @@ const reachableCells = (board, testPosition, head) => {
     });
   });
 
-  const recursive = (cell) => {
+  const recursive = cell => {
     if (isWall(board, cell)) {
       return 0;
     }

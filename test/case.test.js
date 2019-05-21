@@ -6,7 +6,7 @@ const { expect } = chai;
 const getLinkedPart = (coord, diff, width, height) => {
   const targetCoord = {
     x: coord.x + diff.x,
-    y: coord.y + diff.y
+    y: coord.y + diff.y,
   };
 
   if (targetCoord.x < 0 || targetCoord.y < 0 || targetCoord.x >= width || targetCoord.y >= height) {
@@ -77,7 +77,7 @@ const buildRequest2 = (health, charMap) => {
       if (linkedCoord == null) {
         return {
           ...cell,
-          isHead: true
+          isHead: true,
         };
       }
 
@@ -88,15 +88,15 @@ const buildRequest2 = (health, charMap) => {
       if (cell.player !== targetCell.player) {
         return {
           ...cell,
-          isHead: true
+          isHead: true,
         };
       }
 
       return {
         ...cell,
-        nextPart: linkedCoord
+        nextPart: linkedCoord,
       };
-    })
+    }),
   );
 
   const board = nextLinkedMap;
@@ -126,7 +126,7 @@ const buildRequest2 = (health, charMap) => {
       const snake = {
         body: [],
         id: `${i}`,
-        name: `${i}`
+        name: `${i}`,
       };
       do {
         snake.body.push(current);
@@ -176,13 +176,13 @@ const buildRequest2 = (health, charMap) => {
     ...snake,
     body: snake.body.map(part => ({
       x: part.coord.x,
-      y: part.coord.y
-    }))
+      y: part.coord.y,
+    })),
   }));
 
   const you = {
     ...realSnakes[0],
-    health
+    health,
   };
 
   const body = {
@@ -190,9 +190,9 @@ const buildRequest2 = (health, charMap) => {
       width,
       height,
       snakes: realSnakes,
-      food
+      food,
     },
-    you
+    you,
   };
 
   console.log(JSON.stringify(body));
@@ -306,7 +306,7 @@ describe('Snake', () => {
       '           ',
       '           ',
       '           ',
-      '           '
+      '           ',
     ]);
 
     move(body)
