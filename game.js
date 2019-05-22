@@ -220,7 +220,7 @@ const move = body => {
     const directions = calculateDirectionScore(body);
     directions.sort((o1, o2) => o2.score - o1.score);
 
-    console.log(body);
+    console.log(JSON.stringify(body));
     console.log(`${body.you.name} turn: ${body.turn}`);
     directions.forEach(d => {
       console.log(`${d.name} based on \t${d.score.toFixed(1)}\t${d.why}`);

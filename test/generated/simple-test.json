@@ -1,0 +1,5 @@
+{
+  "board": ["...⇉⇊", ".>v.⇊", ".Av⇊⇇", ">A ⇊.", "A.. ."],
+  "name": "Simple test 1",
+  "acceptedOutcomes": "down"
+}
