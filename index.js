@@ -1,8 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const logger = require('morgan');
-const reachableCells = require('./reachable-cells');
-const game = require('./game');
+const reachableCells = require('./lib/reachable-cells');
+const game = require('./lib/game');
 
 const app = express();
 const {

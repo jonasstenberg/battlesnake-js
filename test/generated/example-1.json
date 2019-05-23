@@ -1,0 +1,14 @@
+
+  {
+    "board": [
+			" ..⇉⇊",
+			".>O ⇊",
+			".A.X⇇",
+			">A.. ",
+			"A ..."
+    ],
+    "name": "example-1",
+    "acceptedOutcomes": [
+      "down"
+    ]
+  }

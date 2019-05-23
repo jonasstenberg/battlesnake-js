@@ -1,6 +1,6 @@
 const chai = require('chai');
-const { buildRequest, getGeneratedTestData } = require('./test-case-helper');
-const { start, end, move } = require('../game');
+const { buildRequest, getGeneratedTestData } = require('./lib/test-case-helper');
+const { start, end, move } = require('../lib/game');
 
 const { expect } = chai;
 
