@@ -15,7 +15,7 @@ describe('Snake', () => {
 
   it('should avoid walls', done => {
     const body = buildRequest(100, [
-      '    A      ',
+      '    O      ',
       '    A      ',
       '    A      ',
       '           ',
@@ -40,8 +40,8 @@ describe('Snake', () => {
     const body = buildRequest(100, [
       '    v      ',
       '    v    . ',
-      '    v      ',
-      '  ⇇⇇⇇⇇     ',
+      '    O      ',
+      '  X⇇⇇⇇     ',
       '           ',
       '        .  ',
       '           ',
@@ -59,24 +59,24 @@ describe('Snake', () => {
       .catch(done);
   });
 
-  it('should go for more area', done => {
+  it('should not trap it self', done => {
     const body = buildRequest(100, [
-      ' ⇊⇇⇇       ',
-      '⇊⇇ ⇈       ',
-      '⇊.Av<<<<<<<',
-      '⇊ A<       ',
-      '⇊          ',
-      '⇉⇉         ',
       '           ',
       '           ',
-      '           ',
-      '           ',
+      '   >>>v    ',
+      '   A .v    ',
+      '   AO<<    ',
+      '   A       ',
+      ' v A       ',
+      ' v A       ',
+      ' v A       ',
+      ' >>A       ',
       '           ',
     ]);
 
     move(body)
       .then(result => {
-        expect(result.move).to.equal('left');
+        expect(result.move).to.equal('down');
         done();
       })
       .catch(done);

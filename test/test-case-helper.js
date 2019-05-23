@@ -1,6 +1,10 @@
 const fs = require('fs');
 
 const getLinkedPart = (coord, diff, width, height) => {
+  if (!diff) {
+    return null;
+  }
+
   const targetCoord = {
     x: coord.x + diff.x,
     y: coord.y + diff.y,
@@ -32,11 +36,11 @@ const convertCharsToBoardModel = charMap => {
     const width = row.length;
     const rowMap = [];
     for (let x = 0; x < width; x += 1) {
-      const mainChar = row.charAt(x);
+      const mainChar = row.charAt(x).toUpperCase();
 
       if (mainChar === 'A') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: 0, y: -1 } });
-      } else if (mainChar === 'v') {
+      } else if (mainChar === 'V') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: 0, y: 1 } });
       } else if (mainChar === '<') {
         rowMap.push({ coord: { x, y }, player: 1, nextDiff: { x: -1, y: 0 } });
@@ -52,6 +56,10 @@ const convertCharsToBoardModel = charMap => {
         rowMap.push({ coord: { x, y }, player: 2, nextDiff: { x: 1, y: 0 } });
       } else if (mainChar === '.') {
         rowMap.push({ coord: { x, y }, food: true });
+      } else if (mainChar === 'O') {
+        rowMap.push({ coord: { x, y }, player: 1, isHead: true });
+      } else if (mainChar === 'X') {
+        rowMap.push({ coord: { x, y }, player: 2, isHead: true });
       } else {
         rowMap.push({ coord: { x, y } });
       }
@@ -113,10 +121,10 @@ const buildRequest = (health, charMap) => {
           nextPart.player === undefined ||
           nextPart.player !== cell.player
         ) {
-          cell.isHead = true;
-          return cell;
+          // cell.isHead = true;
+        } else {
+          nextPart.prevPart = cell.coord;
         }
-        nextPart.prevPart = cell.coord;
       }
     }
   }
@@ -130,6 +138,7 @@ const buildRequest = (health, charMap) => {
         id: `${i}`,
         name: `${i}`,
       };
+
       do {
         snake.body.push(current);
         if (current.prevPart) {
@@ -175,7 +184,6 @@ const buildRequest = (health, charMap) => {
     you,
   };
 
-  console.log(JSON.stringify(body));
   return body;
 };
 

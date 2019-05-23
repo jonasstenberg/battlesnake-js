@@ -12,18 +12,6 @@ const writeToFile = (file, content) => {
   });
 };
 
-const printBoard = stringBoard => {
-  let all = '';
-  stringBoard.forEach(row => {
-    let stringRow = '';
-    row.forEach(character => {
-      stringRow += character;
-    });
-    all += `${stringRow}\r\n`;
-  });
-  return all;
-};
-
 const codeBoard = stringBoard => {
   let all = '';
   stringBoard.forEach((row, index) => {
@@ -74,16 +62,16 @@ inputPromise.then(({ nameInput, bodyInput, directionsInput }) => {
   // Add snakes
   const youId = body.you.id;
   body.board.snakes.forEach(snake => {
-    const lastChar = '<';
-
     for (let i = snake.body.length - 1; i >= 0; i -= 1) {
-      let currentChar = lastChar;
+      let currentChar = ' ';
       if (i > 0) {
         const xDiff = snake.body[i].x - snake.body[i - 1].x;
         const yDiff = snake.body[i].y - snake.body[i - 1].y;
 
         if (snake.id === youId) {
-          if (xDiff === 1) {
+          if (i === 0) {
+            currentChar = 'O';
+          } else if (xDiff === 1) {
             currentChar = '<';
           } else if (xDiff === -1) {
             currentChar = '>';
@@ -92,6 +80,8 @@ inputPromise.then(({ nameInput, bodyInput, directionsInput }) => {
           } else if (yDiff === -1) {
             currentChar = 'v';
           }
+        } else if (i === 0) {
+          currentChar = 'X';
         } else if (xDiff === 1) {
           currentChar = '⇇';
         } else if (xDiff === -1) {
@@ -103,6 +93,10 @@ inputPromise.then(({ nameInput, bodyInput, directionsInput }) => {
         }
 
         board[snake.body[i].y][snake.body[i].x] = currentChar;
+      } else if (snake.id === youId) {
+        board[snake.body[i].y][snake.body[i].x] = 'O';
+      } else {
+        board[snake.body[i].y][snake.body[i].x] = 'X';
       }
     }
   });
